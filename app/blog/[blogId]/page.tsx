@@ -1,23 +1,29 @@
 import axios from "axios";
 
-export default async function ({
-  params,
-}: {
-  params: {
+type BlogPageProps = {
+  params: Promise<{
     blogId: string;
-  };
-}) {
-  const postId = params.blogId;
-  const response = await axios.get(
-    `https://jsonplaceholder.typicode.com/posts/${postId}`
-  );
-  const data = await response.data;
-  console.log(data);
+  }>;
+};
 
-  return (
-    <div>
-      <div>blog page : {data.id}</div>
-      <div>title : {data.title}</div>
-    </div>
-  );
+export default async function BlogPage({ params }: BlogPageProps) {
+  const { blogId } = await params;
+
+  try {
+    const response = await axios.get(
+      `https://jsonplaceholder.typicode.com/posts/${blogId}`
+    );
+    const data = response.data;
+
+    return (
+      <div>
+        <h1>Blog Page: {data.id}</h1>
+        <h2>Title: {data.title}</h2>
+        <p>{data.body}</p>
+      </div>
+    );
+  } catch (error) {
+    console.error("Error fetching blog post:", error);
+    return <div>Error loading blog post. Please try again later.</div>;
+  }
 }
